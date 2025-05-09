@@ -4,9 +4,9 @@ import UserTable from "~/components/index/UserTable.vue";
 </script>
 
 <template>
-  <section>
+  <v-container>
     <UserTable/>
-  </section>
+  </v-container>
 </template>
 
 <style scoped>

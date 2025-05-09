@@ -4,10 +4,12 @@ import AppHeader from "~/components/UI/AppHeader.vue";
 </script>
 
 <template>
-  <AppHeader/>
-  <main>
-    <slot/>
-  </main>
+  <v-app>
+    <AppHeader/>
+    <v-main>
+      <slot/>
+    </v-main>
+  </v-app>
 </template>
 
 <style scoped>

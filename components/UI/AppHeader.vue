@@ -3,9 +3,7 @@
 </script>
 
 <template>
-  <header>
-
-  </header>
+  <v-app-bar title="Все пользователи"></v-app-bar>
 </template>
 
 <style scoped>
