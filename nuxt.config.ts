@@ -6,6 +6,12 @@ export default defineNuxtConfig({
     build: {
         transpile: ["vuetify"],
     },
+    app: {
+        head: {
+            title: "Панель администратора",
+            link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+        },
+    },
     modules: [
         '@nuxt/image',
         '@nuxt/icon',

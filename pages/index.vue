@@ -4,7 +4,13 @@ import UserTable from "~/components/index/UserTable.vue";
 </script>
 
 <template>
-  <v-container>
+  <v-container max-width="1400">
+    <div class="d-flex justify-space-between align-center">
+      <h1>Все пользователи</h1>
+      <v-btn color="primary" prepend-icon="mdi-plus">
+        Добавить
+      </v-btn>
+    </div>
     <UserTable/>
   </v-container>
 </template>

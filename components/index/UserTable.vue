@@ -26,9 +26,11 @@ async function loadItems({ page, itemsPerPage }) {
 </script>
 
 <template>
+<v-card>
   <v-data-table-server
       :headers="headers"
       @update:options="loadItems"
       :items="faceStore.faces">
   </v-data-table-server>
+</v-card>
 </template>
