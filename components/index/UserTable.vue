@@ -32,5 +32,12 @@ async function loadItems({ page, itemsPerPage }) {
       @update:options="loadItems"
       :items="faceStore.faces">
   </v-data-table-server>
+
+<!--  <img-->
+<!--      v-if="!!sugarBagPicture"-->
+<!--      :src="`data:image/jpeg;base64,${sugarBagPicture}`"-->
+<!--      alt="Sugar Bag Image"-->
+<!--      style="max-width: 300px;"-->
+<!--  />-->
 </v-card>
 </template>
