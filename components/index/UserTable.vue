@@ -14,7 +14,14 @@ const headers = ref([
 const itemsPerPage = ref(10);
 
 const debouncedFn = useDebounceFn(({page, itemsPerPage, sortBy, search, advancedSearch}) => {
-  faceStore.getFaces({page, itemsPerPage})
+  faceStore.getFaces({page, itemsPerPage}).then(async () => {
+    console.log(faceStore.faces)
+    for (const face of faceStore.faces) {
+      if (!face.photo) {
+        face.photo = await getPhoto(face.id);
+      }
+    }
+  })
       .finally(() => {
       });
 }, 500);
@@ -25,8 +32,9 @@ async function loadItems({page, itemsPerPage}) {
   }
 }
 
+
 async function getPhoto(id: string) {
-  const photo = await faceStore.getPhoto(id);
+  let photo = await faceStore.getPhoto(id)
   return photo;
 }
 </script>
@@ -39,12 +47,16 @@ async function getPhoto(id: string) {
         :items-length="faceStore.faces?.length  || 0"
         @update:options="loadItems"
         :items="faceStore.faces">
-      <template v-slot:item.photo="value">
-        <span>{{ getPhoto(value.item.id) }}</span>
-        <img v-if="" :src="`data:image/jpeg;base64,${getPhoto(value.item.id)}`" alt="">
+      <template v-slot:item.photo="{ item }">
+        <img
+            v-if="item?.photo"
+            :src="`data:image/jpeg;base64,${item.photo}`"
+            alt="Фото"
+            style="max-width: 100px;"
+        />
+        <span v-else>Загрузка...</span>
       </template>
     </v-data-table-server>
-
     <!--  <img-->
     <!--      v-if="!!sugarBagPicture"-->
     <!--      :src="`data:image/jpeg;base64,${sugarBagPicture}`"-->

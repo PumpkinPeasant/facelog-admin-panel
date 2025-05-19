@@ -35,13 +35,14 @@ export const useFaceStore = defineStore("face", () => {
     }
 
     async function getPhoto(id: string): Promise<string> {
+        let photo = '';
         try {
             const response = await axios.post('proxy/face/photo', { id });
-            return response.data.photoBase64;
+            photo = response.data.photoBase64;
         } catch (error) {
             console.error('Error fetching photo:', error);
-            return '';
         }
+        return photo;
     }
 
 
