@@ -2,6 +2,7 @@
 
 import {useFaceStore} from "~/stores/useFace";
 import {useDebounceFn} from "@vueuse/core";
+import UserPopup from "~/components/popups/UserPopup.vue";
 
 const faceStore = useFaceStore();
 
@@ -62,7 +63,11 @@ async function deleteFace(id: string) {
       </template>
       <template v-slot:item.actions="{item}">
         <div>
-          <v-btn icon="mdi-pencil" variant="text"/>
+          <user-popup>
+            <template v-slot:activator="{ activatorProps, isActive }">
+              <v-btn icon="mdi-pencil" variant="text" v-bind="activatorProps"/>
+            </template>
+          </user-popup>
           <v-btn icon="mdi-delete" variant="text" color="red" @click="deleteFace(item.id)"/>
         </div>
       </template>
