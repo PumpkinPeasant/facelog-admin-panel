@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import UserTable from "~/components/index/UserTable.vue";
+import HistoryTable from "~/components/index/HistoryTable.vue";
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import UserTable from "~/components/index/UserTable.vue";
     <div class="d-flex justify-space-between align-center">
       <h1>История входов</h1>
     </div>
-    <UserTable/>
+    <HistoryTable/>
   </v-container>
 </template>
 

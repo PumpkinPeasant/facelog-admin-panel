@@ -19,7 +19,6 @@ export const useFaceStore = defineStore("face", () => {
     }
 
     async function createFace(name: string, file: File) {
-
         let base64File = await toBase64(file);
 
         await axios
@@ -28,16 +27,29 @@ export const useFaceStore = defineStore("face", () => {
                     name: name,
                     base64Photo: base64File,
                 })
-            .then(response => faces.value = response.data.faces)
+            .then(response => {
+                faces.value = response.data.faces;
+            })
             .catch(error => {
                 console.log(error);
             });
     }
 
+    async function updateFace(name: string, file: File) {
+
+    }
+
+    async function deleteFace(id: string) {
+        await axios.post(`proxy/face/delete`,
+            {id})
+            .then(response => {
+            })
+    }
+
     async function getPhoto(id: string): Promise<string> {
         let photo = '';
         try {
-            const response = await axios.post('proxy/face/photo', { id });
+            const response = await axios.post('proxy/face/photo', {id});
             photo = response.data.photoBase64;
         } catch (error) {
             console.error('Error fetching photo:', error);
@@ -83,6 +95,7 @@ export const useFaceStore = defineStore("face", () => {
         faces,
         getFaces,
         createFace,
+        deleteFace,
         getPhoto
     };
 });

@@ -37,6 +37,10 @@ async function getPhoto(id: string) {
   let photo = await faceStore.getPhoto(id)
   return photo;
 }
+
+async function deleteFace(id: string) {
+  await faceStore.deleteFace(id);
+}
 </script>
 
 <template>
@@ -56,12 +60,12 @@ async function getPhoto(id: string) {
         />
         <span v-else>Загрузка...</span>
       </template>
+      <template v-slot:item.actions="{item}">
+        <div>
+          <v-btn icon="mdi-pencil" variant="text"/>
+          <v-btn icon="mdi-delete" variant="text" color="red" @click="deleteFace(item.id)"/>
+        </div>
+      </template>
     </v-data-table-server>
-    <!--  <img-->
-    <!--      v-if="!!sugarBagPicture"-->
-    <!--      :src="`data:image/jpeg;base64,${sugarBagPicture}`"-->
-    <!--      alt="Sugar Bag Image"-->
-    <!--      style="max-width: 300px;"-->
-    <!--  />-->
   </v-card>
 </template>
