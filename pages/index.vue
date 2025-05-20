@@ -2,6 +2,9 @@
 
 import UserTable from "~/components/index/UserTable.vue";
 import UserPopup from "~/components/popups/UserPopup.vue";
+import {usePopupStore} from "~/stores/usePopup";
+
+const popupStore = usePopupStore();
 </script>
 
 <template>
@@ -9,13 +12,9 @@ import UserPopup from "~/components/popups/UserPopup.vue";
     <div class="d-flex justify-space-between align-center">
       <h1>Все пользователи</h1>
 
-      <user-popup>
-        <template v-slot:activator="{ activatorProps, isActive }">
-          <v-btn color="primary" prepend-icon="mdi-plus" v-bind="activatorProps">
-            Добавить
-          </v-btn>
-        </template>
-      </user-popup>
+      <v-btn color="primary" prepend-icon="mdi-plus" @click="popupStore.togglePopup(UserPopup)">
+        Добавить
+      </v-btn>
     </div>
     <UserTable/>
   </v-container>

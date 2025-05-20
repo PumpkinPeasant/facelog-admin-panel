@@ -1,16 +1,12 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500">
-    <template v-slot:activator="{ props: activatorProps, isActive }">
-      <slot name="activator" :activatorProps="activatorProps" :isActive="isActive"></slot>
-    </template>
+  <v-dialog v-model="popupStore.isActive" max-width="500">
     <v-card>
-      <v-card-title>Создание пользователя</v-card-title>
-
+      <v-card-title> {{ isEditMode ? 'Редактирование пользователя' : 'Создание пользователя' }}</v-card-title>
       <v-card-text>
 
         <v-img
-            v-if="imagePreview"
-            :src="imagePreview"
+            :src="photoBase64 ? `data:image/jpeg;base64,${photoBase64}`: `images/empty.jpg`"
+            alt="Фото"
             class="my-4"
             max-height="200"
             contain
@@ -22,7 +18,8 @@
               accept="image/*"
               prepend-icon="mdi-camera"
               :show-size="true"
-              v-model="image"
+              v-model="photo"
+              @update:model-value="convertToBase64"
           />
 
           <v-text-field
@@ -36,47 +33,77 @@
 
       <v-card-actions>
         <v-spacer/>
-        <v-btn text @click="dialog = false">Отмена</v-btn>
-        <v-btn color="primary" @click="submit">Создать</v-btn>
+        <v-btn color="red" text @click="popupStore.closePopup()">Отмена</v-btn>
+        <v-btn color="primary" @click="submit">{{ isEditMode ? 'Применить' : 'Создать' }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script setup>
-import {ref, watch} from 'vue'
+<script setup lang="ts">
+import {onMounted, ref, watch} from 'vue'
 import {useFaceStore} from "~/stores/useFace.js";
+import {usePopupStore} from "~/stores/usePopup";
+import {toBase64} from "~/utils/base64";
 
 const faceStore = useFaceStore();
-const dialog = ref(false)
 const name = ref('')
-const image = ref(null)
-const imagePreview = ref('images/empty.jpg')
+const photo = ref(null)
+const photoBase64 = ref('')
 
-watch(image, (newImage) => {
-  if (newImage) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imagePreview.value = e.target.result;
-    };
-    reader.readAsDataURL(newImage);
-  } else {
-    imagePreview.value = 'images/empty.jpg';
+const popupStore = usePopupStore();
+
+interface UserData {
+  id: string;
+  name: string;
+  photo: string;
+}
+
+const props = defineProps<{
+  userData?: UserData;
+}>();
+
+async function convertToBase64(file: File | File[] | null) {
+  try {
+    if (!file) return;
+
+    const actualFile = Array.isArray(file) ? file[0] : file;
+    if (!actualFile || !(actualFile instanceof File)) return;
+
+    photoBase64.value = await toBase64(actualFile);
+  } catch (e) {
+    console.error("Ошибка при конвертации в base64:", e);
   }
-});
+}
 
-function submit() {
-  if (!name.value || !image.value) {
+
+async function submit() {
+  if (!name.value || !photoBase64.value) {
     alert('Пожалуйста, заполните имя и выберите фото.')
     return
   }
 
-  faceStore.createFace(name.value, image.value);
+  if (isEditMode.value && props.userData) {
+    await faceStore.updateFace(props.userData.id, name.value, photoBase64.value).then(() => {
+      popupStore.closePopup();
+    });
+    return;
+  }
 
-  // Очистка и закрытие
-  name.value = ''
-  image.value = null
-  dialog.value = false
+  await faceStore.createFace(name.value, photoBase64.value).then(() => {
+    popupStore.closePopup();
+  });
 }
+
+const isEditMode = computed(() => {
+  return !!props.userData;
+})
+
+onMounted(() => {
+  if (isEditMode.value && props.userData) {
+    name.value = props.userData.name;
+    photoBase64.value = props.userData.photo;
+  }
+});
 </script>
 
