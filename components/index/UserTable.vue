@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import {useFaceStore} from "~/stores/useFace";
-import {useDebounceFn} from "@vueuse/core";
 import UserPopup from "~/components/popups/UserPopup.vue";
 import {usePopupStore} from "~/stores/usePopup";
 
@@ -14,32 +13,6 @@ const headers = ref([
   {title: "Имя", key: "name", width: "240px"},
   {title: "Действия", key: "actions", width: "200px", sortable: false},
 ]);
-const itemsPerPage = ref(10);
-
-const debouncedFn = useDebounceFn(({page, itemsPerPage, sortBy, search, advancedSearch}) => {
-  faceStore.getFaces({page, itemsPerPage}).then(async () => {
-    console.log(faceStore.faces)
-    for (const face of faceStore.faces) {
-      if (!face.photo) {
-        face.photo = await getPhoto(face.id);
-      }
-    }
-  })
-      .finally(() => {
-      });
-}, 500);
-
-async function loadItems({page, itemsPerPage}) {
-  if (process.client && localStorage) {
-    await debouncedFn({page, itemsPerPage});
-  }
-}
-
-
-async function getPhoto(id: string) {
-  let photo = await faceStore.getPhoto(id)
-  return photo;
-}
 
 async function deleteFace(id: string) {
   await faceStore.deleteFace(id);
@@ -49,10 +22,11 @@ async function deleteFace(id: string) {
 <template>
   <v-card>
     <v-data-table-server
-        v-model:items-per-page="itemsPerPage"
+        v-model:page="faceStore.tableOptions.page"
+        v-model:items-per-page="faceStore.tableOptions.itemsPerPage"
         :headers="headers"
         :items-length="faceStore.faces?.length  || 0"
-        @update:options="loadItems"
+        @update:options="faceStore.loadItems"
         :items="faceStore.faces">
       <template v-slot:item.photo="{ item }">
         <img

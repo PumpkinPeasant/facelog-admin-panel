@@ -5,6 +5,8 @@ export const useFaceStore = defineStore("face", () => {
 
     const faces = ref([]);
 
+    const tableOptions = ref({page: 1, itemsPerPage: 10});
+
     async function getFaces(obj: any) {
         await axios
             .post(`proxy/face/getPaged`,
@@ -25,15 +27,16 @@ export const useFaceStore = defineStore("face", () => {
                     name: name,
                     base64Photo: base64Photo,
                 })
-            .then(response => {
+            .then(async response => {
                 faces.value = response.data.faces;
+                await loadItems();
             })
             .catch(error => {
                 console.log(error);
             });
     }
 
-    async function updateFace(id:string, name: string, base64Photo: string) {
+    async function updateFace(id: string, name: string, base64Photo: string) {
         await axios
             .post(`proxy/face/update`,
                 {
@@ -41,8 +44,9 @@ export const useFaceStore = defineStore("face", () => {
                     name: name,
                     base64Photo: base64Photo,
                 })
-            .then(response => {
+            .then(async response => {
                 faces.value = response.data.faces;
+                await loadItems();
             })
             .catch(error => {
                 console.log(error);
@@ -52,7 +56,8 @@ export const useFaceStore = defineStore("face", () => {
     async function deleteFace(id: string) {
         await axios.post(`proxy/face/delete`,
             {id})
-            .then(response => {
+            .then(async () => {
+                await loadItems();
             })
     }
 
@@ -67,12 +72,23 @@ export const useFaceStore = defineStore("face", () => {
         return photo;
     }
 
+    async function loadItems() {
+        await getFaces(tableOptions.value).then(async () => {
+            for (const face of faces.value) {
+                if (!face.photo) {
+                    face.photo = await getPhoto(face.id);
+                }
+            }
+        })
+    }
+
     return {
         faces,
-        getFaces,
         createFace,
         updateFace,
         deleteFace,
-        getPhoto
+        getPhoto,
+        tableOptions,
+        loadItems
     };
 });

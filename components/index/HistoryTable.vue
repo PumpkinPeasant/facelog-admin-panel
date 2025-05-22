@@ -1,11 +1,7 @@
 <script setup lang="ts">
-
-import {useFaceStore} from "~/stores/useFace";
 import {useHistoryStore} from "~/stores/useHistory";
-import {useDebounceFn} from "@vueuse/core";
 
 const historyStore = useHistoryStore();
-const faceStore = useFaceStore();
 
 const headers = ref([
   {title: "Id", key: "id"},
@@ -16,31 +12,6 @@ const headers = ref([
   {title: "Действия", key: "actions", sortable: false},
 ]);
 
-const itemsPerPage = ref(10);
-
-const debouncedFn = useDebounceFn(({page, itemsPerPage}) => {
-  historyStore.getHistory({page, itemsPerPage}).then(async () => {
-    for (const face of historyStore.history) {
-      if (!face.photo) {
-        face.photo = await getPhoto(face.id);
-      }
-    }
-  })
-      .finally(() => {
-      });
-}, 500);
-
-async function getPhoto(id: string) {
-  let photo = await historyStore.getPhoto(id)
-  return photo;
-}
-
-
-async function loadItems({page, itemsPerPage}) {
-  if (process.client && localStorage) {
-    await debouncedFn({page, itemsPerPage});
-  }
-}
 
 async function deleteHistory(id: string) {
   await historyStore.deleteFace(id);
@@ -64,10 +35,11 @@ function formatDate(date: string) {
 <template>
   <v-card>
     <v-data-table-server
-        v-model:items-per-page="itemsPerPage"
+        v-model:page="historyStore.tableOptions.page"
+        v-model:items-per-page="historyStore.tableOptions.itemsPerPage"
         :headers="headers"
         :items-length="historyStore.history?.length  || 0"
-        @update:options="loadItems"
+        @update:options="historyStore.loadItems"
         :items="historyStore.history">
       <template v-slot:item.photo="{ item }">
         <img
