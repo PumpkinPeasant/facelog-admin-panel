@@ -7,8 +7,8 @@ export const useAuthStore = defineStore("auth", () => {
 
 
     async function login(name: String, password: String) {
-        return axios.post(`proxy/Authorization/LoggOn`, {
-            name: name.trim(),
+            return axios.post(`proxy/auth`, {
+            login: name.trim(),
             password: password.trim(),
         })
             .then(async response => {
@@ -19,21 +19,19 @@ export const useAuthStore = defineStore("auth", () => {
             })
             .catch(async error => {
                 console.error("Произошла ошибка при выполнении запроса:", error.message);
-                if (error.response.status === 404) {
-                } else {
-                }
                 return false;
             });
     }
 
     function logout() {
         localStorage.removeItem("loginInfo");
+        router.push('/login');
     }
 
     onMounted(() => {
-        // if (!!localStorage.getItem("loginInfo")) {
-        //     userData.value = JSON.parse(localStorage.getItem("loginInfo"));
-        // }
+        if (!!localStorage.getItem("loginInfo")) {
+            userData.value = JSON.parse(localStorage.getItem("loginInfo"));
+        }
     });
 
     return {

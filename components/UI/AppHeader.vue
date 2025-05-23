@@ -18,7 +18,7 @@
       </v-tab>
     </v-tabs>
 
-    <v-btn icon @click="router.push('/login')">
+    <v-btn icon @click="authStore.logout()">
       <v-icon>mdi-logout</v-icon>
     </v-btn>
   </v-app-bar>
@@ -32,5 +32,7 @@
 }
 </style>
 <script setup lang="ts">
-const router = useRouter();
+import {useAuthStore} from "~/stores/useAuth";
+
+const authStore = useAuthStore();
 </script>
