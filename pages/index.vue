@@ -9,14 +9,16 @@ const popupStore = usePopupStore();
 
 <template>
   <v-container max-width="1400">
-    <div class="d-flex justify-space-between align-center">
-      <h1>Все пользователи</h1>
+    <v-card>
+      <v-card-title class="d-flex justify-space-between align-center">
+        Все пользователи
 
-      <v-btn color="primary" prepend-icon="mdi-plus" @click="popupStore.togglePopup(UserPopup)">
-        Добавить
-      </v-btn>
-    </div>
-    <UserTable/>
+        <v-btn color="primary" prepend-icon="mdi-plus" @click="popupStore.togglePopup(UserPopup)">
+          Добавить
+        </v-btn>
+      </v-card-title>
+        <UserTable/>
+    </v-card>
   </v-container>
 </template>
 

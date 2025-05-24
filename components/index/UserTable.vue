@@ -3,48 +3,68 @@
 import {useFaceStore} from "~/stores/useFace";
 import UserPopup from "~/components/popups/UserPopup.vue";
 import {usePopupStore} from "~/stores/usePopup";
+import {onMounted} from "vue";
+import {computed} from "@vue/reactivity";
 
 const faceStore = useFaceStore();
 const popupStore = usePopupStore();
 
-const headers = ref([
-  {title: "Id", key: "id"},
-  {title: "Фото", key: "photo", width: "150px"},
-  {title: "Имя", key: "name", width: "240px"},
-  {title: "Действия", key: "actions", width: "200px", sortable: false},
-]);
-
 async function deleteFace(id: string) {
   await faceStore.deleteFace(id);
 }
+
+onMounted(async () => {
+  await faceStore.getFacesCount();
+  await faceStore.loadItems();
+})
+
+const pageCount = computed(() => {
+  return Math.ceil(faceStore.facesCount / faceStore.tableOptions.itemsPerPage);
+})
 </script>
 
 <template>
-  <v-card>
-    <v-data-table-server
-        v-model:page="faceStore.tableOptions.page"
-        v-model:items-per-page="faceStore.tableOptions.itemsPerPage"
-        :headers="headers"
-        :items-length="faceStore.faces?.length  || 0"
-        @update:options="faceStore.loadItems"
-        :items="faceStore.faces">
-      <template v-slot:item.photo="{ item }">
-        <img
-            v-if="item?.photo"
-            :src="`data:image/jpeg;base64,${item.photo}`"
-            alt="Фото"
-            style="max-width: 100px;"
-        />
-        <span v-else>Загрузка...</span>
-      </template>
-      <template v-slot:item.actions="{item}">
-        <div>
+  <v-card-text>
+    <v-list lines="two">
+      <v-list-subheader>Всего пользователей: {{ faceStore.facesCount }}</v-list-subheader>
+      <v-list-item
+          v-for="item in faceStore.faces"
+          :key="item.title"
+          :subtitle="`Последний вход: ${!!item?.lastEnter ? item.lastEnter : 'никогда'}`"
+          :title="item.name"
+      >
+        <template v-slot:prepend>
+          <v-avatar size="100">
+            <v-img v-if="item?.photo" :src="`data:image/jpeg;base64,${item.photo}`" cover alt="Фото"></v-img>
+            <v-icon v-else size="x-large" icon="mdi-account-circle"></v-icon>
+          </v-avatar>
+        </template>
+
+        <template v-slot:append>
           <v-btn icon="mdi-pencil" variant="text"
                  @click="popupStore.togglePopup(UserPopup,
-                 {userData: {id: item.id,name: item.name,photo: item.photo}})"/>
+                           {userData: {id: item.id,name: item.name,photo: item.photo}})"/>
           <v-btn icon="mdi-delete" variant="text" color="red" @click="deleteFace(item.id)"/>
-        </div>
-      </template>
-    </v-data-table-server>
-  </v-card>
+        </template>
+      </v-list-item>
+    </v-list>
+  </v-card-text>
+  <v-card-actions style="display: grid; grid-template-columns: 200px auto 200px">
+    <v-select
+        label="Записей"
+        hide-details
+        density="compact"
+        max-width="100"
+        @update:modelValue="faceStore.loadItems()"
+        :items="[5, 10, 25, 50]"
+        v-model="faceStore.tableOptions.itemsPerPage"/>
+    <v-pagination
+        color="primary"
+        class="flex-1-1-100"
+        density="compact"
+        :total-visible="4"
+        @update:modelValue="faceStore.loadItems()"
+        v-model="faceStore.tableOptions.page"
+        :length="pageCount"/>
+  </v-card-actions>
 </template>

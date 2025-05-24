@@ -1,9 +1,12 @@
 import {defineStore} from "pinia";
 import axios from "axios";
+import {ref} from "vue";
 
 export const useFaceStore = defineStore("face", () => {
 
     const faces = ref([]);
+
+    const facesCount = ref(0);
 
     const tableOptions = ref({page: 1, itemsPerPage: 10});
 
@@ -82,6 +85,13 @@ export const useFaceStore = defineStore("face", () => {
         })
     }
 
+    async function getFacesCount() {
+        await axios.get(`proxy/face/count`)
+            .then((response) => {
+                facesCount.value = response.data.count;
+            })
+    }
+
     return {
         faces,
         createFace,
@@ -89,6 +99,8 @@ export const useFaceStore = defineStore("face", () => {
         deleteFace,
         getPhoto,
         tableOptions,
-        loadItems
+        loadItems,
+        getFacesCount,
+        facesCount
     };
 });
