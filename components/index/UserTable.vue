@@ -2,6 +2,7 @@
 
 import {useFaceStore} from "~/stores/useFace";
 import UserPopup from "~/components/popups/UserPopup.vue";
+import ConfirmPopup from "~/components/popups/ConfirmPopup.vue";
 import {usePopupStore} from "~/stores/usePopup";
 import {onMounted} from "vue";
 import {computed} from "@vue/reactivity";
@@ -49,7 +50,9 @@ const updateItems = () => {
           <v-btn icon="mdi-pencil" variant="text"
                  @click="popupStore.togglePopup(UserPopup,
                            {userData: {id: item.id,name: item.name,photo: item.photo}})"/>
-          <v-btn icon="mdi-delete" variant="text" color="red" @click="deleteFace(item.id)"/>
+          <v-btn icon="mdi-delete" variant="text" color="red" @click="popupStore.togglePopup(ConfirmPopup,
+  { data: { title: 'Удаление пользователя', text: `Вы точно хотите удалить пользователя ${item.name}?`}},
+  () =>  deleteFace(item.id))"/>
         </template>
       </v-list-item>
     </v-list>
