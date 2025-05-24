@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             apiBase: "",
+            logEnv:  JSON.stringify(import.meta.env.API_BACKEND)
         },
     },
     vite: {

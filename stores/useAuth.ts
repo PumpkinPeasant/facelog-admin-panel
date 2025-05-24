@@ -5,9 +5,11 @@ export const useAuthStore = defineStore("auth", () => {
     const router = useRouter();
     const userData = ref();
 
+    const config = useRuntimeConfig()
+
 
     async function login(name: String, password: String) {
-            return axios.post(`proxy/auth`, {
+        return axios.post(`proxy/auth`, {
             login: name.trim(),
             password: password.trim(),
         })
@@ -18,6 +20,8 @@ export const useAuthStore = defineStore("auth", () => {
                 return true;
             })
             .catch(async error => {
+                console.log(error);
+                console.log(config.public.logEnv)
                 console.error("Произошла ошибка при выполнении запроса:", error.message);
                 return false;
             });
