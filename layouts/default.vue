@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppHeader from "~/components/UI/AppHeader.vue";
 import {usePopupStore} from "~/stores/usePopup";
+import Alert from "~/components/UI/Alert.vue";
 
 const popupStore = usePopupStore();
 </script>
@@ -15,6 +16,7 @@ const popupStore = usePopupStore();
           v-bind="popupStore.props"/>
       <slot/>
     </v-main>
+    <alert/>
   </v-app>
 </template>
 
