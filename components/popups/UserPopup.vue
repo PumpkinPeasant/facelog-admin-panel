@@ -3,17 +3,22 @@
     <v-card>
       <v-card-title> {{ isEditMode ? 'Редактирование пользователя' : 'Создание пользователя' }}</v-card-title>
       <v-card-text>
-
-        <v-img
-            :src="photoBase64 ? `data:image/jpeg;base64,${photoBase64}`: `images/empty.jpg`"
-            alt="Фото"
-            class="my-4"
-            max-height="200"
-            contain
-        />
+        <div class="d-flex justify-center">
+          <v-avatar
+              class="mb-4 cursor-pointer"
+              rounded="0"
+              size="200"
+              @click="triggerFileInput">
+            <v-img
+                :src="photoBase64 ? `data:image/jpeg;base64,${photoBase64}`: `images/empty.jpg`"
+                alt="Фото"
+                cover/>
+          </v-avatar>
+        </div>
 
         <v-form ref="form">
           <v-file-input
+              ref="fileInput"
               label="Загрузите фото"
               accept="image/*"
               prepend-icon="mdi-camera"
@@ -41,15 +46,16 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
-import {useFaceStore} from "~/stores/useFace.js";
-import {usePopupStore} from "~/stores/usePopup";
-import {toBase64} from "~/utils/base64";
+import { onMounted, ref, watch, computed } from 'vue';
+import { useFaceStore } from "~/stores/useFace.js";
+import { usePopupStore } from "~/stores/usePopup";
+import { toBase64 } from "~/utils/base64";
 
 const faceStore = useFaceStore();
-const name = ref('')
-const photo = ref(null)
-const photoBase64 = ref('')
+const name = ref('');
+const photo = ref(null);
+const photoBase64 = ref('');
+const fileInput = ref('fileInput');
 
 const popupStore = usePopupStore();
 
@@ -76,11 +82,10 @@ async function convertToBase64(file: File | File[] | null) {
   }
 }
 
-
 async function submit() {
   if (!name.value || !photoBase64.value) {
     alert('Пожалуйста, заполните имя и выберите фото.')
-    return
+    return;
   }
 
   if (isEditMode.value && props.userData) {
@@ -105,5 +110,10 @@ onMounted(() => {
     photoBase64.value = props.userData.photo;
   }
 });
-</script>
 
+function triggerFileInput() {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+}
+</script>
