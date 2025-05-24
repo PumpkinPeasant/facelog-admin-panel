@@ -21,6 +21,12 @@ onMounted(async () => {
 const pageCount = computed(() => {
   return Math.ceil(faceStore.facesCount / faceStore.tableOptions.itemsPerPage);
 })
+
+const updateItems = () => {
+  setTimeout(async () => {
+    await faceStore.loadItems();
+  }, 0)
+}
 </script>
 
 <template>
@@ -55,7 +61,7 @@ const pageCount = computed(() => {
         hide-details
         density="compact"
         max-width="100"
-        @update:modelValue="faceStore.loadItems()"
+        @update:modelValue="updateItems"
         :items="[5, 10, 25, 50]"
         v-model="faceStore.tableOptions.itemsPerPage"/>
     <v-pagination
@@ -63,7 +69,7 @@ const pageCount = computed(() => {
         class="flex-1-1-100"
         density="compact"
         :total-visible="4"
-        @update:modelValue="faceStore.loadItems()"
+        @update:modelValue="updateItems"
         v-model="faceStore.tableOptions.page"
         :length="pageCount"/>
   </v-card-actions>
