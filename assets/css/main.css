@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap');
+
+:root {
+    /* Colors */
+    --color-primary-dark: #151a1e;
+    --color-secondary-dark: #2d363e;
+    --color-accent-dark: #20262c;
+    --color-border: #404d59;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a0adba;
+    --color-success: #22c55e;
+    --color-danger: #ef4444;
+
+    /* Typography */
+    --font-family: 'Manrope', 'Noto Sans', sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 2rem;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+    --spacing-3xl: 2.5rem;
+    --spacing-4xl: 3rem;
+
+    /* Layout */
+    --container-max-width: 960px;
+    --header-height: 4rem;
+    --border-radius: 0.75rem;
+    --border-radius-full: 50%;
+
+    /* Breakpoints */
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.btn-regular {
+    background-color: var(--color-secondary-dark);
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: all 0.2s ease;
+}
+
+.btn-regular:hover:not(.btn-regular--disabled):not(.btn-regular--active) {
+    background-color: var(--color-border);
+}
+
+.btn-regular--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
