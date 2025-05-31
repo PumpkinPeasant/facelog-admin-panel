@@ -27,9 +27,13 @@ const authStore = useAuthStore();
       </div>
 
       <div class="header-actions">
-        <nav class="navigation desktop-only">
-          <a href="#" class="nav-link">Обзор</a>
-          <a href="#" class="nav-link active">История входов</a>
+        <nav class="navigation">
+          <nuxt-link class="nav-link" active-class="active" to="/">
+            <a>Обзор</a>
+          </nuxt-link>
+          <nuxt-link class="nav-link" active-class="active" to="history">
+            <a>История входов</a>
+          </nuxt-link>
         </nav>
 
       </div>
@@ -100,5 +104,35 @@ const authStore = useAuthStore();
 .nav-link:hover,
 .nav-link.active {
   color: var(--color-text-secondary);
+}
+
+.desktop-only {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .header-content {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-title {
+    display: none;
+  }
+
+  .header-actions {
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
 }
 </style>

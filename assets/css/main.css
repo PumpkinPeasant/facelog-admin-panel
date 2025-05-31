@@ -48,6 +48,31 @@
     box-sizing: border-box;
 }
 
+/*Layout*/
+.container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    width: 100%;
+}
+
+.page-header {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.page-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: var(--font-size-xl);
+    }
+}
+
+/*UI*/
 .btn-regular {
     background-color: var(--color-secondary-dark);
     border: none;

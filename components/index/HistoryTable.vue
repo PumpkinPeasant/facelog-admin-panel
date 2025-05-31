@@ -208,7 +208,7 @@ onMounted(async () => {
           <button
               @click="goToPage(currentPage + 1)"
               :disabled="currentPage === totalPages"
-              class="pagination-btn"
+              class="btn-regular"
               :class="{ 'pagination-btn--disabled': currentPage === totalPages }"
           >
             Вперед
@@ -220,14 +220,12 @@ onMounted(async () => {
 </template>
 
 <style>
-/* Inherit CSS variables from parent */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Search */
 .search-container {
   padding: var(--spacing-md) var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
