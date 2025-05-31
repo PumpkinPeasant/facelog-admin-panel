@@ -91,7 +91,7 @@ function goToPage(page: number) {
 }
 
 .pagination-btn--active {
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
   color: white;
 }
 

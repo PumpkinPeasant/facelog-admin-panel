@@ -7,14 +7,16 @@ const authStore = useAuthStore();
 <template>
   <header class="header">
     <div class="header-content">
-      <div class="brand">
+      <nuxt-link to="/" class="brand">
         <div class="logo">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <path fill="currentColor" fill-rule="evenodd" d="M7.72 2.79L5.5 5.75a1.25 1.25 0 0 1-1 .5H4A2.75 2.75 0 0 0 1.25 9v10A2.75 2.75 0 0 0 4 21.75h16A2.75 2.75 0 0 0 22.75 19V9A2.75 2.75 0 0 0 20 6.25h-.5a1.25 1.25 0 0 1-1-.5l-2.22-2.96a1.35 1.35 0 0 0-1.08-.54H8.8c-.425 0-.825.2-1.08.54M12 8.25a4.75 4.75 0 1 0 0 9.5a4.75 4.75 0 0 0 0-9.5" clip-rule="evenodd" />
+            <path fill="currentColor" fill-rule="evenodd"
+                  d="M7.72 2.79L5.5 5.75a1.25 1.25 0 0 1-1 .5H4A2.75 2.75 0 0 0 1.25 9v10A2.75 2.75 0 0 0 4 21.75h16A2.75 2.75 0 0 0 22.75 19V9A2.75 2.75 0 0 0 20 6.25h-.5a1.25 1.25 0 0 1-1-.5l-2.22-2.96a1.35 1.35 0 0 0-1.08-.54H8.8c-.425 0-.825.2-1.08.54M12 8.25a4.75 4.75 0 1 0 0 9.5a4.75 4.75 0 0 0 0-9.5"
+                  clip-rule="evenodd"/>
           </svg>
         </div>
         <h2 class="brand-title">FaceID: Панель управления</h2>
-      </div>
+      </nuxt-link>
 
       <div class="header-actions">
         <nav class="navigation">
@@ -53,6 +55,7 @@ const authStore = useAuthStore();
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  text-decoration: none;
 }
 
 .logo {
@@ -98,15 +101,7 @@ const authStore = useAuthStore();
   color: var(--color-text-secondary);
 }
 
-.desktop-only {
-  display: flex;
-}
-
 @media (max-width: 768px) {
-  .desktop-only {
-    display: none;
-  }
-
   .header-content {
     padding: var(--spacing-md) var(--spacing-lg);
   }

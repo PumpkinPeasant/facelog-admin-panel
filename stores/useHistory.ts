@@ -31,21 +31,18 @@ export const useHistoryStore = defineStore("history", () => {
         loading.value = true;
         try {
             const requestData = {
-                ...(params.name && { name: params.name }),
-                ...(params.dateFrom && { dateFrom: params.dateFrom }),
-                ...(params.dateTo && { dateTo: params.dateTo }),
+                ...(params.name && {name: params.name}),
+                ...(params.dateFrom && {dateFrom: params.dateFrom}),
+                ...(params.dateTo && {dateTo: params.dateTo}),
                 page: params.page,
-                size: params.pageSize
+                pageSize: params.pageSize
             };
 
             const response = await axios.post(`proxy/history/getPaged`, requestData);
 
-            history.value = response.data;
+            history.value = response.data.result;
 
-            await axios.get(`proxy/history/count`)
-                .then((response) => {
-                    historyCount.value = response.data.count;
-                })
+            historyCount.value = response.data.count;
 
             // Загружаем фото для записей, которые его не имеют
             for (const record of history.value) {
@@ -98,7 +95,7 @@ export const useHistoryStore = defineStore("history", () => {
     }
 
     function updateSearchParams(params: Partial<HistorySearchRequest>) {
-        searchParams.value = { ...searchParams.value, ...params };
+        searchParams.value = {...searchParams.value, ...params};
     }
 
     // Сброс поиска

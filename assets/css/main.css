@@ -8,6 +8,7 @@
     --color-border: #404d59;
     --color-text-primary: #ffffff;
     --color-text-secondary: #a0adba;
+    --color-primary: #3b82f6;
     --color-success: #22c55e;
     --color-danger: #ef4444;
 
@@ -76,6 +77,28 @@
 }
 
 /*UI*/
+.btn-primary {
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    color: white;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-border);
+}
+
+.btn-primary:disabled,
+.btn-cancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .btn-regular {
     background-color: var(--color-secondary-dark);
     border: none;

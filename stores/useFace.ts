@@ -35,17 +35,14 @@ export const useFaceStore = defineStore("face", () => {
                 ...(params.dateFrom && {dateFrom: params.dateFrom}),
                 ...(params.dateTo && {dateTo: params.dateTo}),
                 page: params.page,
-                size: params.pageSize
+                pageSize: params.pageSize
             };
 
             const response = await axios.post(`proxy/face/getPaged`, requestData);
 
-            faces.value = response.data;
+            faces.value = response.data.result;
 
-            await axios.get(`proxy/face/count`)
-                .then((response) => {
-                    facesCount.value = response.data.count;
-                })
+            facesCount.value = response.data.count;
 
             for (const record of faces.value) {
                 if (!record.photo) {
@@ -60,11 +57,11 @@ export const useFaceStore = defineStore("face", () => {
                     type: "error"
                 });
             else
-                await alertStore.addAlert({
-                    message: "Ошибка получения пользователей",
-                    status: "Код ошибки: " + error.response.status,
-                    type: "error"
-                });
+            await alertStore.addAlert({
+                message: "Ошибка получения пользователей",
+                status: "Код ошибки: " + error.response.status,
+                type: "error"
+            });
         } finally {
             loading.value = false;
         }
@@ -115,12 +112,11 @@ export const useFaceStore = defineStore("face", () => {
     }
 
     async function deleteFace(id: string) {
-        try{
+        try {
             await axios.post(`proxy/face/delete`,
                 {id})
             await loadItems();
-        }
-        catch (error) {
+        } catch (error) {
             await alertStore.addAlert({
                 message: "Ошибка удаления пользователя",
                 status: "Код ошибки: " + error.response.status,
@@ -148,6 +144,11 @@ export const useFaceStore = defineStore("face", () => {
     async function loadItems() {
         await getFaces(searchParams.value);
     }
+
+    function updateSearchParams(params: Partial<FaceSearchRequest>) {
+        searchParams.value = {...searchParams.value, ...params};
+    }
+
     return {
         faces,
         createFace,
@@ -156,6 +157,7 @@ export const useFaceStore = defineStore("face", () => {
         getPhoto,
         searchParams,
         loadItems,
+        updateSearchParams,
         facesCount
     };
 });

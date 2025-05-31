@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, watch} from 'vue';
-import { useHistoryStore } from "~/stores/useHistory";
+import ConfirmPopup from "~/components/popups/ConfirmPopup.vue";
+import {useHistoryStore} from "~/stores/useHistory";
 import TablePagination from "~/components/UI/table/TablePagination.vue";
 import TableSearch from "~/components/UI/table/TableSearch.vue";
-import { debounce } from 'lodash-es';
+import {debounce} from 'lodash-es';
 import {getAvatarUrl} from "~/utils/getAvatar";
 import {formatDate} from "~/utils/formatDate";
+import {usePopupStore} from "~/stores/usePopup";
 
+const popupStore = usePopupStore();
 const historyStore = useHistoryStore();
 
 const searchQuery = ref('');
@@ -26,7 +29,7 @@ watch(searchQuery, (newQuery) => {
 const currentPage = computed({
   get: () => historyStore.searchParams.page,
   set: async (value: number) => {
-    historyStore.updateSearchParams({ page: value });
+    historyStore.updateSearchParams({page: value});
     await historyStore.loadItems();
   }
 });
@@ -111,13 +114,17 @@ onMounted(async () => {
             <!-- Действия -->
             <td class="table-cell table-cell--actions">
               <button
-                  @click="deleteHistory(item.id)"
+                  @click="popupStore.togglePopup(ConfirmPopup,
+                  { data: { title: 'Удаление пользователя', text: `Вы точно хотите удалить запись?`}},
+        () =>  deleteHistory(item.id))"
                   class="icon-btn delete-btn"
                   title="Удалить запись"
                   :disabled="historyStore.loading"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                  <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     viewBox="0 0 256 256">
+                  <path
+                      d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/>
                 </svg>
               </button>
             </td>
