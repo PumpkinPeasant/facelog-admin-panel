@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {ref, computed, onMounted} from 'vue';
 import { useHistoryStore } from "~/stores/useHistory";
+import TablePagination from "~/components/UI/table/TablePagination.vue";
+import TableSearch from "~/components/UI/table/TableSearch.vue";
 
 const historyStore = useHistoryStore();
 
@@ -30,10 +32,6 @@ const paginatedHistory = computed(() => {
   return filteredHistory.value.slice(start, end);
 });
 
-const totalPages = computed(() => {
-  return Math.ceil(filteredHistory.value.length / itemsPerPage.value);
-});
-
 async function deleteHistory(id: string) {
   await historyStore.deleteFace(id);
 }
@@ -48,12 +46,6 @@ function formatDate(date: string) {
     minute: 'numeric',
     second: 'numeric',
   });
-}
-
-function goToPage(page: number) {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
 }
 
 // Генерация аватара по умолчанию или использование фото
@@ -74,24 +66,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <!-- Search -->
-    <div class="search-container">
-      <div class="search-input-wrapper">
-        <div class="search-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-            <path
-                d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/>
-          </svg>
-        </div>
-        <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Поиск по имени или дате"
-            class="search-input"
-        />
-      </div>
-    </div>
-
+    <table-search v-model="searchQuery"/>
     <!-- Access Log Table -->
     <div class="table-container">
       <div class="table-wrapper">
@@ -166,55 +141,12 @@ onMounted(async () => {
         </table>
       </div>
 
-      <!-- Пагинация -->
-      <div v-if="totalPages > 1" class="pagination">
-        <div class="pagination-info">
-          Показано {{ Math.min((currentPage - 1) * itemsPerPage + 1, filteredHistory.length) }}-{{ Math.min(currentPage * itemsPerPage, filteredHistory.length) }} из {{ filteredHistory.length }}
-        </div>
+      <table-pagination
+          v-model:currentPage="currentPage"
+          v-model:itemsPerPage="itemsPerPage"
+          :rows="filteredHistory"
+          @update:page=""/>
 
-        <div class="pagination-controls">
-          <button
-              @click="goToPage(currentPage - 1)"
-              :disabled="currentPage === 1"
-              class="btn-regular"
-              :class="{ 'btn-regular--disabled': currentPage === 1 }"
-          >
-            Назад
-          </button>
-
-          <template v-for="page in totalPages" :key="page">
-            <button
-                v-if="page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1"
-                @click="goToPage(page)"
-                class="btn-regular pagination-btn--page"
-                :class="{ 'pagination-btn--active': currentPage === page }"
-            >
-              {{ page }}
-            </button>
-            <span
-                v-else-if="page === 2 && currentPage > 4"
-                class="pagination-dots"
-            >
-              ...
-            </span>
-            <span
-                v-else-if="page === totalPages - 1 && currentPage < totalPages - 3"
-                class="pagination-dots"
-            >
-              ...
-            </span>
-          </template>
-
-          <button
-              @click="goToPage(currentPage + 1)"
-              :disabled="currentPage === totalPages"
-              class="btn-regular"
-              :class="{ 'pagination-btn--disabled': currentPage === totalPages }"
-          >
-            Вперед
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -224,41 +156,6 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-.search-container {
-  padding: var(--spacing-md) var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-}
-
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  background-color: var(--color-secondary-dark);
-  border-radius: var(--border-radius);
-  height: 3rem;
-  overflow: hidden;
-}
-
-.search-icon {
-  color: var(--color-text-secondary);
-  padding: 0 var(--spacing-lg);
-  display: flex;
-  align-items: center;
-}
-
-.search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-base);
-  padding: var(--spacing-lg) var(--spacing-sm);
-}
-
-.search-input::placeholder {
-  color: var(--color-text-secondary);
 }
 
 /* Table */
@@ -400,53 +297,14 @@ onMounted(async () => {
   background-color: #dc2626;
 }
 
-/* Pagination */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--spacing-xl);
-}
-
-.pagination-info {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.pagination-btn--page {
-  min-width: 2.5rem;
-}
-
-.pagination-btn--active {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.pagination-dots {
-  color: var(--color-text-secondary);
-  padding: 0 var(--spacing-sm);
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
-  .search-container,
   .table-container {
     padding: var(--spacing-lg) 0;
   }
 
   .table-cell--date {
     min-width: 200px;
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: var(--spacing-lg);
   }
 }
 
