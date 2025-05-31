@@ -3,7 +3,9 @@ import {ref, computed, onMounted, watch} from 'vue';
 import { useHistoryStore } from "~/stores/useHistory";
 import TablePagination from "~/components/UI/table/TablePagination.vue";
 import TableSearch from "~/components/UI/table/TableSearch.vue";
-import { debounce } from 'lodash-es'; // или создайте свою функцию debounce
+import { debounce } from 'lodash-es';
+import {getAvatarUrl} from "~/utils/getAvatar";
+import {formatDate} from "~/utils/formatDate";
 
 const historyStore = useHistoryStore();
 
@@ -42,27 +44,6 @@ const itemsPerPage = computed({
 
 async function deleteHistory(id: string) {
   await historyStore.deleteFace(id);
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('ru-RU', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-  });
-}
-
-function getAvatarUrl(item: any) {
-  if (item?.photo) {
-    return `data:image/jpeg;base64,${item.photo}`;
-  }
-  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
-  const colorIndex = (item.name?.charCodeAt(0) || 0) % colors.length;
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name || 'Unknown')}&background=${colors[colorIndex].substring(1)}&color=fff&size=40`;
 }
 
 onMounted(async () => {
@@ -131,7 +112,7 @@ onMounted(async () => {
             <td class="table-cell table-cell--actions">
               <button
                   @click="deleteHistory(item.id)"
-                  class="delete-btn"
+                  class="icon-btn delete-btn"
                   title="Удалить запись"
                   :disabled="historyStore.loading"
               >
@@ -155,7 +136,6 @@ onMounted(async () => {
       <table-pagination
           v-model:currentPage="currentPage"
           v-model:itemsPerPage="itemsPerPage"
-          :rows="historyStore.history"
           :total-items="historyStore.historyCount"
           @update:page=""/>
 
@@ -163,215 +143,6 @@ onMounted(async () => {
   </div>
 </template>
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Loading styles */
-.loading-container {
-  padding: var(--spacing-2xl);
-  text-align: center;
-}
-
-.loading-spinner {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-lg);
-}
-
-/* Table */
-.table-container {
-  padding: var(--spacing-md) var(--spacing-lg);
-}
-
-.table-wrapper {
-  background-color: var(--color-primary-dark);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  overflow-x: auto;
-}
-
-.access-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 700px;
-}
-
-.table-header {
-  background-color: var(--color-accent-dark);
-}
-
-.table-cell {
-  padding: var(--spacing-md) var(--spacing-lg);
-  text-align: left;
-  border-top: 1px solid var(--color-border);
-}
-
-.table-header .table-cell {
-  border-top: none;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.table-cell--photo {
-  width: 3.5rem;
-}
-
-.table-cell--name {
-  min-width: 200px;
-}
-
-.table-cell--date {
-  min-width: 250px;
-}
-
-.table-cell--status {
-  width: 150px;
-}
-
-.table-cell--actions {
-  width: 100px;
-}
-
-.table-cell--empty {
-  text-align: center;
-  color: var(--color-text-secondary);
-  padding: var(--spacing-2xl);
-}
-
-.table-row {
-  transition: background-color 0.2s ease;
-}
-
-.table-row:hover {
-  background-color: rgba(45, 54, 62, 0.3);
-}
-
-.user-photo {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--border-radius-full);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.user-name {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-}
-
-.access-date {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.status-btn {
-  background-color: var(--color-secondary-dark);
-  border: none;
-  border-radius: var(--border-radius);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  padding: var(--spacing-sm) var(--spacing-lg);
-  width: 100%;
-  max-width: 120px;
-  transition: all 0.2s ease;
-}
-
-.status-btn--allowed {
-  background-color: var(--color-success);
-  color: white;
-}
-
-.status-btn--allowed:hover {
-  background-color: #1fa750;
-}
-
-.status-btn--denied {
-  background-color: var(--color-danger);
-  color: white;
-}
-
-.status-btn--denied:hover {
-  background-color: #dc2626;
-}
-
-.delete-btn {
-  background-color: var(--color-danger);
-  border: none;
-  border-radius: var(--border-radius);
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  transition: background-color 0.2s ease;
-}
-
-.delete-btn:hover:not(:disabled) {
-  background-color: #dc2626;
-}
-
-.delete-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .table-container {
-    padding: var(--spacing-lg) 0;
-  }
-
-  .table-cell--date {
-    min-width: 200px;
-  }
-}
-
-@media (max-width: 640px) {
-  .table-cell--date {
-    display: none;
-  }
-
-  .table-header .table-cell--date {
-    display: none;
-  }
-
-  .access-table {
-    min-width: 500px;
-  }
-}
-
-@media (max-width: 480px) {
-  .table-cell {
-    padding: var(--spacing-sm) var(--spacing-md);
-  }
-
-  .table-cell--photo {
-    width: 3rem;
-  }
-
-  .user-photo {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .status-btn {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: var(--font-size-xs);
-  }
-
-  .delete-btn {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-}
+<style scoped>
+@import "/assets/css/table.css";
 </style>

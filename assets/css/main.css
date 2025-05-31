@@ -56,6 +56,9 @@
 }
 
 .page-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
 }
@@ -92,4 +95,34 @@
 .btn-regular--disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.icon-btn {
+    background-color: var(--color-secondary-dark);
+    color: var(--color-text-primary);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    transition: background-color 0.2s ease;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    background-color: var(--color-border);
+}
+
+.icon-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    .icon-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
 }

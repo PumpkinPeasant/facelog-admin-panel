@@ -9,21 +9,11 @@ const authStore = useAuthStore();
     <div class="header-content">
       <div class="brand">
         <div class="logo">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_6_319)">
-              <path
-                  d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
-                  fill="currentColor"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_6_319">
-                <rect width="48" height="48" fill="white"></rect>
-              </clipPath>
-            </defs>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="currentColor" fill-rule="evenodd" d="M7.72 2.79L5.5 5.75a1.25 1.25 0 0 1-1 .5H4A2.75 2.75 0 0 0 1.25 9v10A2.75 2.75 0 0 0 4 21.75h16A2.75 2.75 0 0 0 22.75 19V9A2.75 2.75 0 0 0 20 6.25h-.5a1.25 1.25 0 0 1-1-.5l-2.22-2.96a1.35 1.35 0 0 0-1.08-.54H8.8c-.425 0-.825.2-1.08.54M12 8.25a4.75 4.75 0 1 0 0 9.5a4.75 4.75 0 0 0 0-9.5" clip-rule="evenodd" />
           </svg>
         </div>
-        <h2 class="brand-title">FaceID Access</h2>
+        <h2 class="brand-title">FaceID: Панель управления</h2>
       </div>
 
       <div class="header-actions">
@@ -62,13 +52,14 @@ const authStore = useAuthStore();
 .brand {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-sm);
 }
 
 .logo {
   width: 1rem;
   height: 1rem;
   color: var(--color-text-primary);
+  margin-bottom: 4px;
 }
 
 .logo svg {
@@ -99,6 +90,7 @@ const authStore = useAuthStore();
   font-size: var(--font-size-sm);
   font-weight: 500;
   transition: color 0.2s ease;
+  cursor: pointer;
 }
 
 .nav-link:hover,

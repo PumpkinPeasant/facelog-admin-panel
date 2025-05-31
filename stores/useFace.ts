@@ -3,25 +3,55 @@ import axios from "axios";
 import {ref} from "vue";
 import {useAlertStore} from "~/stores/useAlert";
 
+export interface FaceSearchRequest {
+    name?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    page: number;
+    pageSize: number;
+}
+
 export const useFaceStore = defineStore("face", () => {
 
     const alertStore = useAlertStore();
 
     const faces = ref([]);
-
     const facesCount = ref(0);
+    const loading = ref(false);
 
-    const tableOptions = ref({page: 1, itemsPerPage: 10});
+    const searchParams = ref<FaceSearchRequest>({
+        name: undefined,
+        dateFrom: undefined,
+        dateTo: undefined,
+        page: 1,
+        pageSize: 5
+    });
 
-    async function getFaces(obj: any) {
+    async function getFaces(params: FaceSearchRequest) {
+        loading.value = true;
         try {
-            await axios
-                .post(`proxy/face/getPaged`,
-                    {
-                        page: obj.page,
-                        size: obj.itemsPerPage,
-                    })
-                .then(response => faces.value = response.data)
+            const requestData = {
+                ...(params.name && {name: params.name}),
+                ...(params.dateFrom && {dateFrom: params.dateFrom}),
+                ...(params.dateTo && {dateTo: params.dateTo}),
+                page: params.page,
+                size: params.pageSize
+            };
+
+            const response = await axios.post(`proxy/face/getPaged`, requestData);
+
+            faces.value = response.data;
+
+            await axios.get(`proxy/face/count`)
+                .then((response) => {
+                    facesCount.value = response.data.count;
+                })
+
+            for (const record of faces.value) {
+                if (!record.photo) {
+                    record.photo = await getPhoto(record.id);
+                }
+            }
         } catch (error) {
             if (error.status === 527)
                 await alertStore.addAlert({
@@ -35,7 +65,8 @@ export const useFaceStore = defineStore("face", () => {
                     status: "Код ошибки: " + error.response.status,
                     type: "error"
                 });
-            console.log(error);
+        } finally {
+            loading.value = false;
         }
     }
 
@@ -47,10 +78,7 @@ export const useFaceStore = defineStore("face", () => {
                         name: name,
                         base64Photo: base64Photo,
                     })
-                .then(async response => {
-                    faces.value = response.data.faces;
-                    await loadItems();
-                })
+            await loadItems();
         } catch (error) {
             if (error.status === 527)
                 await alertStore.addAlert({
@@ -64,7 +92,6 @@ export const useFaceStore = defineStore("face", () => {
                     status: "Код ошибки: " + error.response.status,
                     type: "error"
                 });
-            console.log(error);
         }
     }
 
@@ -77,10 +104,7 @@ export const useFaceStore = defineStore("face", () => {
                         name: name,
                         base64Photo: base64Photo,
                     })
-                .then(async response => {
-                    faces.value = response.data.faces;
-                    await loadItems();
-                })
+            await loadItems();
         } catch (error) {
             await alertStore.addAlert({
                 message: "Ошибка изменения пользователя",
@@ -91,11 +115,18 @@ export const useFaceStore = defineStore("face", () => {
     }
 
     async function deleteFace(id: string) {
-        await axios.post(`proxy/face/delete`,
-            {id})
-            .then(async () => {
-                await loadItems();
-            })
+        try{
+            await axios.post(`proxy/face/delete`,
+                {id})
+            await loadItems();
+        }
+        catch (error) {
+            await alertStore.addAlert({
+                message: "Ошибка удаления пользователя",
+                status: "Код ошибки: " + error.response.status,
+                type: "error"
+            });
+        }
     }
 
     async function getPhoto(id: string): Promise<string> {
@@ -106,7 +137,7 @@ export const useFaceStore = defineStore("face", () => {
         } catch (error) {
             await alertStore.addAlert({
                 message: "Ошибка получения фото",
-                status: "Код ошибки: " + error.response.status,
+                status: "Код ошибки: " + error.response?.status,
                 type: "error"
             });
             console.error('Error fetching photo:', error);
@@ -115,30 +146,15 @@ export const useFaceStore = defineStore("face", () => {
     }
 
     async function loadItems() {
-        await getFacesCount();
-        await getFaces(tableOptions.value).then(async () => {
-            for (const face of faces.value) {
-                if (!face.photo) {
-                    face.photo = await getPhoto(face.id);
-                }
-            }
-        })
+        await getFaces(searchParams.value);
     }
-
-    async function getFacesCount() {
-        await axios.get(`proxy/face/count`)
-            .then((response) => {
-                facesCount.value = response.data.count;
-            })
-    }
-
     return {
         faces,
         createFace,
         updateFace,
         deleteFace,
         getPhoto,
-        tableOptions,
+        searchParams,
         loadItems,
         facesCount
     };
