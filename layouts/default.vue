@@ -35,7 +35,7 @@ const popupStore = usePopupStore();
   padding: var(--spacing-xl) 10rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1280px) {
   .main {
     padding: var(--spacing-lg) var(--spacing-md);
   }

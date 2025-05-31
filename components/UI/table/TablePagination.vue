@@ -2,8 +2,8 @@
   <div v-if="totalPages > 1" class="pagination">
     <div class="pagination-info">
       Показано {{
-        Math.min((currentPage - 1) * itemsPerPage + 1, rows.length)
-      }}-{{ Math.min(currentPage * itemsPerPage, rows.length) }} из {{ rows.length }}
+        Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)
+      }}-{{ Math.min(currentPage * itemsPerPage, totalItems) }} из {{ totalItems }}
     </div>
 
     <div class="pagination-controls">
@@ -11,8 +11,7 @@
           @click="goToPage(currentPage - 1)"
           :disabled="currentPage === 1"
           class="btn-regular"
-          :class="{ 'btn-regular--disabled': currentPage === 1 }"
-      >
+          :class="{ 'btn-regular--disabled': currentPage === 1 }">
         Назад
       </button>
 
@@ -21,30 +20,22 @@
             v-if="page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1"
             @click="goToPage(page)"
             class="btn-regular pagination-btn--page"
-            :class="{ 'pagination-btn--active': currentPage === page }"
-        >
+            :class="{ 'pagination-btn--active': currentPage === page }">
           {{ page }}
         </button>
-        <span
-            v-else-if="page === 2 && currentPage > 4"
-            class="pagination-dots"
-        >
-              ...
-            </span>
-        <span
-            v-else-if="page === totalPages - 1 && currentPage < totalPages - 3"
-            class="pagination-dots"
-        >
-              ...
-            </span>
+        <span v-else-if="page === 2 && currentPage > 4" class="pagination-dots">
+          ...
+        </span>
+        <span v-else-if="page === totalPages - 1 && currentPage < totalPages - 3" class="pagination-dots">
+          ...
+        </span>
       </template>
 
       <button
           @click="goToPage(currentPage + 1)"
           :disabled="currentPage === totalPages"
           class="btn-regular"
-          :class="{ 'pagination-btn--disabled': currentPage === totalPages }"
-      >
+          :class="{ 'pagination-btn--disabled': currentPage === totalPages }">
         Вперед
       </button>
     </div>
@@ -52,18 +43,19 @@
 </template>
 
 <script setup lang="ts">
+import {computed} from "vue";
+
 const emit = defineEmits(['update:page'])
 
 const currentPage = defineModel('currentPage')
 const itemsPerPage = defineModel('itemsPerPage')
 
 const props = defineProps({
-  rows: {type: Array, required: true},
+  totalItems: {type: Number, required: true},
 })
 
-
 const totalPages = computed(() => {
-  return Math.ceil(props.rows.length / itemsPerPage.value);
+  return Math.ceil(props.totalItems / itemsPerPage.value);
 });
 
 function goToPage(page: number) {

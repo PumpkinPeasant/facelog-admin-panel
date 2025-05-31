@@ -1,35 +1,43 @@
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue';
+import {ref, computed, onMounted, watch} from 'vue';
 import { useHistoryStore } from "~/stores/useHistory";
 import TablePagination from "~/components/UI/table/TablePagination.vue";
 import TableSearch from "~/components/UI/table/TableSearch.vue";
+import { debounce } from 'lodash-es'; // или создайте свою функцию debounce
 
 const historyStore = useHistoryStore();
 
-// Состояние для поиска
 const searchQuery = ref('');
 
-// Фильтрованные данные на основе поиска
-const filteredHistory = computed(() => {
-  if (!searchQuery.value) {
-    return historyStore.history || [];
-  }
+const debouncedSearch = debounce(async (query: string) => {
+  historyStore.updateSearchParams({
+    name: query || undefined,
+    page: 1
+  });
+  await historyStore.loadItems();
+}, 500);
 
-  const query = searchQuery.value.toLowerCase();
-  return (historyStore.history || []).filter(item =>
-      item.name?.toLowerCase().includes(query) ||
-      formatDate(item.date).toLowerCase().includes(query)
-  );
+watch(searchQuery, (newQuery) => {
+  debouncedSearch(newQuery);
 });
 
-// Пагинация
-const currentPage = ref(1);
-const itemsPerPage = ref(5);
+const currentPage = computed({
+  get: () => historyStore.searchParams.page,
+  set: async (value: number) => {
+    historyStore.updateSearchParams({ page: value });
+    await historyStore.loadItems();
+  }
+});
 
-const paginatedHistory = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return filteredHistory.value.slice(start, end);
+const itemsPerPage = computed({
+  get: () => historyStore.searchParams.pageSize,
+  set: async (value: number) => {
+    historyStore.updateSearchParams({
+      pageSize: value,
+      page: 1
+    });
+    await historyStore.loadItems();
+  }
 });
 
 async function deleteHistory(id: string) {
@@ -48,12 +56,10 @@ function formatDate(date: string) {
   });
 }
 
-// Генерация аватара по умолчанию или использование фото
 function getAvatarUrl(item: any) {
   if (item?.photo) {
     return `data:image/jpeg;base64,${item.photo}`;
   }
-  // Генерируем цветной аватар на основе имени
   const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
   const colorIndex = (item.name?.charCodeAt(0) || 0) % colors.length;
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name || 'Unknown')}&background=${colors[colorIndex].substring(1)}&color=fff&size=40`;
@@ -61,14 +67,18 @@ function getAvatarUrl(item: any) {
 
 onMounted(async () => {
   await historyStore.loadItems();
-})
+});
 </script>
 
 <template>
   <div>
     <table-search v-model="searchQuery"/>
-    <!-- Access Log Table -->
-    <div class="table-container">
+
+    <div v-if="historyStore.loading" class="loading-container">
+      <div class="loading-spinner">Загрузка...</div>
+    </div>
+
+    <div v-else class="table-container">
       <div class="table-wrapper">
         <table class="access-table">
           <thead>
@@ -82,7 +92,7 @@ onMounted(async () => {
           </thead>
           <tbody>
           <tr
-              v-for="item in paginatedHistory"
+              v-for="item in historyStore.history"
               :key="item.id"
               class="table-row"
           >
@@ -123,6 +133,7 @@ onMounted(async () => {
                   @click="deleteHistory(item.id)"
                   class="delete-btn"
                   title="Удалить запись"
+                  :disabled="historyStore.loading"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
                   <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/>
@@ -132,7 +143,7 @@ onMounted(async () => {
           </tr>
 
           <!-- Пустое состояние -->
-          <tr v-if="paginatedHistory.length === 0" class="table-row">
+          <tr v-if="historyStore.history.length === 0" class="table-row">
             <td colspan="5" class="table-cell table-cell--empty">
               {{ searchQuery ? 'Записи не найдены' : 'Нет записей' }}
             </td>
@@ -144,7 +155,8 @@ onMounted(async () => {
       <table-pagination
           v-model:currentPage="currentPage"
           v-model:itemsPerPage="itemsPerPage"
-          :rows="filteredHistory"
+          :rows="historyStore.history"
+          :total-items="historyStore.historyCount"
           @update:page=""/>
 
     </div>
@@ -156,6 +168,17 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Loading styles */
+.loading-container {
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.loading-spinner {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
 }
 
 /* Table */
@@ -293,8 +316,13 @@ onMounted(async () => {
   transition: background-color 0.2s ease;
 }
 
-.delete-btn:hover {
+.delete-btn:hover:not(:disabled) {
   background-color: #dc2626;
+}
+
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Responsive Design */
