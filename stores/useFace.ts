@@ -61,7 +61,7 @@ export const useFaceStore = defineStore("face", () => {
                 });
             else
                 await alertStore.addAlert({
-                    message: "Ошибка изменения пользователя",
+                    message: "Ошибка получения пользователей",
                     status: "Код ошибки: " + error.response.status,
                     type: "error"
                 });
