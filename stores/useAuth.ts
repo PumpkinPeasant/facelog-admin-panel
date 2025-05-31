@@ -21,7 +21,6 @@ export const useAuthStore = defineStore("auth", () => {
             })
             .catch(async error => {
                 console.log(error);
-                console.log(config.public.logEnv)
                 console.error("Произошла ошибка при выполнении запроса:", error.message);
                 return false;
             });
