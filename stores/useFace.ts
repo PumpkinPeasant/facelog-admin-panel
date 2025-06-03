@@ -85,6 +85,10 @@ export const useFaceStore = defineStore("face", () => {
                         name: name,
                         base64Photo: base64Photo,
                     })
+            await alertStore.addAlert({
+                message: `Пользователь "${name}" создан`,
+                type: "success"
+            });
             await loadItems();
         } catch (error) {
             if (error.status === 527)
@@ -111,6 +115,10 @@ export const useFaceStore = defineStore("face", () => {
                         name: name,
                         base64Photo: base64Photo,
                     })
+            await alertStore.addAlert({
+                message: `Пользователь "${name}" обновлен`,
+                type: "success"
+            });
             await loadItems();
         } catch (error) {
             await alertStore.addAlert({
@@ -125,6 +133,10 @@ export const useFaceStore = defineStore("face", () => {
         try {
             await axios.post(`proxy/face/delete`,
                 {id})
+            await alertStore.addAlert({
+                message: `Пользователь удалён`,
+                type: "success"
+            });
             await loadItems();
         } catch (error) {
             await alertStore.addAlert({

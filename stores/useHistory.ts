@@ -73,6 +73,10 @@ export const useHistoryStore = defineStore("history", () => {
     async function deleteFace(id: string) {
         try {
             await axios.post(`proxy/history/delete`, {id});
+            await alertStore.addAlert({
+                message: `Запись удалена`,
+                type: "success"
+            });
             await loadItems();
         } catch (error) {
             await alertStore.addAlert({
@@ -107,7 +111,6 @@ export const useHistoryStore = defineStore("history", () => {
         searchParams.value = {...searchParams.value, ...params};
     }
 
-    // Сброс поиска
     function resetSearch() {
         searchParams.value = {
             name: undefined,
@@ -121,13 +124,11 @@ export const useHistoryStore = defineStore("history", () => {
     return {
         deleteFace,
         getPhoto,
-        getHistory,
         history,
         historyCount,
         loading,
         searchParams,
         updateSearchParams,
-        resetSearch,
         loadItems
     }
 })
