@@ -11,6 +11,7 @@ import {formatDate} from "~/utils/formatDate";
 import TableSearch from "~/components/UI/table/TableSearch.vue";
 import TablePagination from "~/components/UI/table/TablePagination.vue";
 import {debounce} from 'lodash-es';
+import TableEmptyState from "~/components/UI/table/TableEmptyState.vue";
 
 const faceStore = useFaceStore();
 const popupStore = usePopupStore();
@@ -19,7 +20,9 @@ const searchQuery = ref('');
 
 const debouncedSearch = debounce(async (query: string) => {
   faceStore.updateSearchParams({
-    name: query || undefined,
+    searchParams: {
+      name: query || undefined,
+    },
     page: 1
   });
   await faceStore.loadItems();
@@ -65,7 +68,14 @@ onMounted(async () => {
       <div class="loading-spinner">Загрузка...</div>
     </div>
 
-    <div class="table-container">
+    <!-- Заглушка для пустого состояния -->
+    <table-empty-state
+        :search-query="searchQuery"
+        @clear="searchQuery = ''"
+        v-else-if="!faceStore.faces?.length"/>
+
+    <!-- Таблица с данными -->
+    <div v-else class="table-container">
       <div class="table-wrapper">
         <table class="access-table">
           <thead>
@@ -104,7 +114,7 @@ onMounted(async () => {
               <div class="table-cell--actions__wrapper">
                 <button
                     class="icon-btn"
-                    title="Удалить пользователя"
+                    title="Редактировать пользователя"
                     :disabled="faceStore.loading"
                     @click="popupStore.togglePopup(UserPopup,
                   {userData: {id: item.id,name: item.name,photo: item.photo}})">
@@ -128,12 +138,6 @@ onMounted(async () => {
                   </svg>
                 </button>
               </div>
-            </td>
-          </tr>
-          <!-- Пустое состояние -->
-          <tr v-if="faceStore.faces.length === 0" class="table-row">
-            <td colspan="5" class="table-cell table-cell--empty">
-              {{ searchQuery ? 'Записи не найдены' : 'Нет записей' }}
             </td>
           </tr>
           </tbody>

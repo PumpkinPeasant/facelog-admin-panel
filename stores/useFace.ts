@@ -4,11 +4,13 @@ import {ref} from "vue";
 import {useAlertStore} from "~/stores/useAlert";
 
 export interface FaceSearchRequest {
-    name?: string;
-    dateFrom?: string;
-    dateTo?: string;
     page: number;
     pageSize: number;
+    searchParams?: {
+        name?: string;
+        dateFrom?: string;
+        dateTo?: string;
+    }
 }
 
 export const useFaceStore = defineStore("face", () => {
@@ -20,22 +22,28 @@ export const useFaceStore = defineStore("face", () => {
     const loading = ref(false);
 
     const searchParams = ref<FaceSearchRequest>({
-        name: undefined,
-        dateFrom: undefined,
-        dateTo: undefined,
         page: 1,
-        pageSize: 5
+        pageSize: 5,
+        searchParams: {
+            name: undefined,
+            dateFrom: undefined,
+            dateTo: undefined,
+        }
     });
 
     async function getFaces(params: FaceSearchRequest) {
         loading.value = true;
         try {
+            const searchParams = {
+                ...(params.searchParams?.name && {name: params.searchParams.name}),
+                ...(params.searchParams?.dateFrom && {dateFrom: params.searchParams.dateFrom}),
+                ...(params.searchParams?.dateTo && {dateTo: params.searchParams.dateTo}),
+            };
+
             const requestData = {
-                ...(params.name && {name: params.name}),
-                ...(params.dateFrom && {dateFrom: params.dateFrom}),
-                ...(params.dateTo && {dateTo: params.dateTo}),
                 page: params.page,
-                pageSize: params.pageSize
+                pageSize: params.pageSize,
+                ...(Object.keys(searchParams).length > 0 && {searchParams}),
             };
 
             const response = await axios.post(`proxy/face/getPaged`, requestData);
@@ -44,9 +52,11 @@ export const useFaceStore = defineStore("face", () => {
 
             facesCount.value = response.data.count;
 
-            for (const record of faces.value) {
-                if (!record.photo) {
-                    record.photo = await getPhoto(record.id);
+            if(response.data.count){
+                for (const record of faces.value) {
+                    if (!record.photo) {
+                        record.photo = await getPhoto(record.id);
+                    }
                 }
             }
         } catch (error) {
@@ -57,11 +67,11 @@ export const useFaceStore = defineStore("face", () => {
                     type: "error"
                 });
             else
-            await alertStore.addAlert({
-                message: "Ошибка получения пользователей",
-                status: "Код ошибки: " + error.response.status,
-                type: "error"
-            });
+                await alertStore.addAlert({
+                    message: "Ошибка получения пользователей",
+                    status: "Код ошибки: " + error.response.status,
+                    type: "error"
+                });
         } finally {
             loading.value = false;
         }
