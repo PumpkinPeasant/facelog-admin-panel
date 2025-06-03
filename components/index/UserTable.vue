@@ -107,7 +107,7 @@ onMounted(async () => {
 
             <!-- Дата -->
             <td class="table-cell table-cell--date">
-              <span class="access-date">{{ item.date ? formatDate(item.date) : 'Никогда' }}</span>
+              <span class="access-date">{{ item.lastEnter ? formatDate(item.lastEnter) : 'Никогда' }}</span>
             </td>
             <!-- Действия -->
             <td class="table-cell table-cell--actions">
