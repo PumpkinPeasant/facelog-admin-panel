@@ -72,7 +72,7 @@ onMounted(async () => {
     <table-empty-state
         :search-query="searchQuery"
         @clear="searchQuery = ''"
-        v-else-if="!faceStore.faces?.length"/>
+        v-else-if="faceStore.facesCount === 0"/>
 
     <!-- Таблица с данными -->
     <div v-else class="table-container">

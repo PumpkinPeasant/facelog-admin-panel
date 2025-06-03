@@ -8,6 +8,7 @@ import {debounce} from 'lodash-es';
 import {getAvatarUrl} from "~/utils/getAvatar";
 import {formatDate} from "~/utils/formatDate";
 import {usePopupStore} from "~/stores/usePopup";
+import TableEmptyState from "~/components/UI/table/TableEmptyState.vue";
 
 const popupStore = usePopupStore();
 const historyStore = useHistoryStore();
@@ -16,7 +17,9 @@ const searchQuery = ref('');
 
 const debouncedSearch = debounce(async (query: string) => {
   historyStore.updateSearchParams({
-    name: query || undefined,
+    searchParams: {
+      name: query || undefined,
+    },
     page: 1
   });
   await historyStore.loadItems();
@@ -61,6 +64,12 @@ onMounted(async () => {
     <div v-if="historyStore.loading" class="loading-container">
       <div class="loading-spinner">Загрузка...</div>
     </div>
+
+    <!-- Заглушка для пустого состояния -->
+    <table-empty-state
+        :search-query="searchQuery"
+        @clear="searchQuery = ''"
+        v-else-if="historyStore.historyCount === 0"/>
 
     <div v-else class="table-container">
       <div class="table-wrapper">

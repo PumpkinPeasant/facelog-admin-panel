@@ -10,7 +10,7 @@
       <input
           v-model="searchQuery"
           type="text"
-          placeholder="Поиск по имени или дате"
+          placeholder="Поиск по имени"
           class="search-input"
       />
     </div>
