@@ -50,6 +50,31 @@
 }
 
 /*Layout*/
+.app {
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    flex: 1;
+    padding: var(--spacing-xl) 10rem;
+}
+
+@media (max-width: 1280px) {
+    .main {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .main {
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+}
+
 .container {
     max-width: var(--container-max-width);
     margin: 0 auto;
@@ -148,4 +173,45 @@
         width: 1.75rem;
         height: 1.75rem;
     }
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.input-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.input-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-text-secondary);
+}
+
+.text-input {
+    background-color: var(--color-secondary-dark);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-md);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: var(--color-text-secondary);
+    background-color: var(--color-accent-dark);
+}
+
+.text-input::placeholder {
+    color: var(--color-text-secondary);
 }

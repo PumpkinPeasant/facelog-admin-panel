@@ -200,48 +200,6 @@ function triggerFileInput() {
   gap: var(--spacing-xl);
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.input-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.input-icon {
-  width: 1rem;
-  height: 1rem;
-  color: var(--color-text-secondary);
-}
-
-.text-input {
-  background-color: var(--color-secondary-dark);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-base);
-  padding: var(--spacing-md);
-  font-family: var(--font-family);
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.text-input:focus {
-  outline: none;
-  border-color: var(--color-text-secondary);
-  background-color: var(--color-accent-dark);
-}
-
-.text-input::placeholder {
-  color: var(--color-text-secondary);
-}
-
 .file-input {
   display: none;
 }
