@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import {useLive} from "~/stores/useLive";
 
+const streamStore = useLive();
 // Реактивные переменные для состояния
 const isStreaming = ref(false);
 const isFullscreen = ref(false);
@@ -16,10 +18,18 @@ onMounted(() => {
   }, 1000);
 });
 
-// Заглушки для функций (вы реализуете позже)
 const toggleStream = () => {
-  isStreaming.value = !isStreaming.value;
-  connectionStatus.value = isStreaming.value ? 'connected' : 'disconnected';
+  if (streamStore.liveStatus) {
+    // If currently streaming, stop it
+    streamStore.stop();
+    isStreaming.value = false;
+    connectionStatus.value = 'disconnected';
+  } else {
+    // If not streaming, start it
+    streamStore.connect();
+    isStreaming.value = true;
+    connectionStatus.value = 'connecting';
+  }
 };
 
 const toggleFullscreen = () => {
@@ -54,13 +64,9 @@ const changeQuality = (newQuality: string) => {
         <div class="video-container" :class="{ 'video-container--fullscreen': isFullscreen }">
           <!-- Видеопоток -->
           <div class="video-stream">
-            <video
-                v-if="isStreaming"
-                class="video-element"
-                autoplay
-                muted>
-              <!-- Здесь будет ваш видеопоток -->
-            </video>
+            <div v-if="isStreaming && streamStore.frameUrl">
+              <img :src="streamStore.frameUrl" alt="Видеопоток" />
+            </div>
             <div v-else class="video-placeholder">
               <div class="placeholder-content">
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
