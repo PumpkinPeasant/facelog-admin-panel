@@ -78,15 +78,6 @@
     background-color: rgba(45, 54, 62, 0.3);
 }
 
-.user-photo {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: var(--border-radius-full);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
 .user-name {
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -170,11 +161,6 @@
 
     .table-cell--photo {
         width: 3rem;
-    }
-
-    .user-photo {
-        width: 2rem;
-        height: 2rem;
     }
 
     .status-btn {

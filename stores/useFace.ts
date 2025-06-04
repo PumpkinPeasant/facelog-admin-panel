@@ -52,7 +52,7 @@ export const useFaceStore = defineStore("face", () => {
 
             facesCount.value = response.data.count;
 
-            if(response.data.count){
+            if (response.data.count) {
                 for (const record of faces.value) {
                     if (!record.photo) {
                         record.photo = await getPhoto(record.id);
@@ -60,18 +60,11 @@ export const useFaceStore = defineStore("face", () => {
                 }
             }
         } catch (error) {
-            if (error.status === 527)
-                await alertStore.addAlert({
-                    message: "Лицо не распознано",
-                    status: "Код ошибки: " + error.response.status,
-                    type: "error"
-                });
-            else
-                await alertStore.addAlert({
-                    message: "Ошибка получения пользователей",
-                    status: "Код ошибки: " + error.response.status,
-                    type: "error"
-                });
+            await alertStore.addAlert({
+                message: "Ошибка получения пользователей",
+                status: "Код ошибки: " + error.response.status,
+                type: "error"
+            });
         } finally {
             loading.value = false;
         }
@@ -121,6 +114,13 @@ export const useFaceStore = defineStore("face", () => {
             });
             await loadItems();
         } catch (error) {
+            if (error.status === 527)
+                await alertStore.addAlert({
+                    message: "Лицо не распознано",
+                    status: "Код ошибки: " + error.response.status,
+                    type: "error"
+                });
+            else
             await alertStore.addAlert({
                 message: "Ошибка изменения пользователя",
                 status: "Код ошибки: " + error.response.status,
