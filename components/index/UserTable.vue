@@ -12,6 +12,7 @@ import TableSearch from "~/components/UI/table/TableSearch.vue";
 import TablePagination from "~/components/UI/table/TablePagination.vue";
 import {debounce} from 'lodash-es';
 import TableEmptyState from "~/components/UI/table/TableEmptyState.vue";
+import UserPhoto from "~/components/UI/table/UserPhoto.vue";
 
 const faceStore = useFaceStore();
 const popupStore = usePopupStore();
@@ -94,10 +95,7 @@ onMounted(async () => {
           >
             <!-- Фото -->
             <td class="table-cell table-cell--photo">
-              <div
-                  class="user-photo"
-                  :style="`background-image: url('${getAvatarUrl(item)}');`"
-              ></div>
+              <UserPhoto :user="item"/>
             </td>
 
             <!-- Имя -->
