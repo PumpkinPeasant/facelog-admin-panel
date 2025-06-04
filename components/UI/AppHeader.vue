@@ -26,6 +26,10 @@ const authStore = useAuthStore();
           <nuxt-link class="nav-link" active-class="active" to="/history">
             <a>История входов</a>
           </nuxt-link>
+          <nuxt-link class="nav-link" active-class="active" to="/live">
+            <div class="status-dot" :class="`status-dot--disconnected`"></div>
+            <a>Live</a>
+          </nuxt-link>
         </nav>
         <button
             @click="authStore.logout()"
@@ -103,11 +107,31 @@ const authStore = useAuthStore();
   transition: color 0.2s ease;
   cursor: pointer;
   user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .nav-link:hover,
 .nav-link.active {
   color: var(--color-text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-dot--disconnected {
+  background-color: var(--color-danger);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @media (max-width: 768px) {
