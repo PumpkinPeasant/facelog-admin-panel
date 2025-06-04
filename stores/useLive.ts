@@ -6,7 +6,7 @@ export const useLive = defineStore('live', () => {
     const connect = () => {
         if (socket.value) return;
 
-        socket.value = new WebSocket('ws://192.168.0.147:8008/ws/video');
+        socket.value = new WebSocket('ws://api:8000/ws/video');
 
         socket.value.onopen = () => {
             liveStatus.value = true;
