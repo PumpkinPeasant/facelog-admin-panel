@@ -23,7 +23,7 @@ const authStore = useAuthStore();
           <nuxt-link class="nav-link" active-class="active" to="/">
             <a>Обзор</a>
           </nuxt-link>
-          <nuxt-link class="nav-link" active-class="active" to="history">
+          <nuxt-link class="nav-link" active-class="active" to="/history">
             <a>История входов</a>
           </nuxt-link>
         </nav>
@@ -102,6 +102,7 @@ const authStore = useAuthStore();
   font-weight: 500;
   transition: color 0.2s ease;
   cursor: pointer;
+  user-select: none;
 }
 
 .nav-link:hover,
