@@ -21,14 +21,26 @@ export default defineNuxtConfig({
                 // @ts-expect-error
                 config.plugins.push(vuetify({autoImport: true}));
             });
-        },],
+        },
+    ],
     css: ["@/assets/css/main.css", "vuetify/styles"],
+    nitro: {
+        devProxy: {
+            '/proxy': {
+                target: process.env.API_BACKEND?.replace('/**', ''),
+                changeOrigin: true,
+                prependPath: true,
+            }
+        }
+    },
+    // Only HTTP proxy
     routeRules: {
-        "/proxy/**": {proxy: import.meta.env.API_BACKEND},
+        "/proxy/**": {proxy: process.env.API_BACKEND},
     },
     runtimeConfig: {
         public: {
-            apiBase: "",
+            apiBase: process.env.API_BACKEND?.replace('/**', ''),
+            wsBase: process.env.WEB_SOCKET?.replace('/**', ''),
         },
     },
     vite: {
