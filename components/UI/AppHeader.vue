@@ -26,10 +26,10 @@ const authStore = useAuthStore();
           <nuxt-link class="nav-link" active-class="active" to="/history">
             <a>История входов</a>
           </nuxt-link>
-          <nuxt-link class="nav-link" active-class="active" to="/live">
-            <div class="status-dot" :class="`status-dot--disconnected`"></div>
-            <a>Live</a>
-          </nuxt-link>
+<!--          <nuxt-link class="nav-link" active-class="active" to="/live">-->
+<!--            <div class="status-dot" :class="`status-dot&#45;&#45;disconnected`"></div>-->
+<!--            <a>Live</a>-->
+<!--          </nuxt-link>-->
         </nav>
         <button
             @click="authStore.logout()"
