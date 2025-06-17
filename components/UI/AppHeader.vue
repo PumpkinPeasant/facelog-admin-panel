@@ -15,7 +15,7 @@ const authStore = useAuthStore();
                   clip-rule="evenodd"/>
           </svg>
         </div>
-        <h2 class="brand-title">FaceID: Панель управления</h2>
+        <h2 class="brand-title">FaceIT: Панель управления</h2>
       </nuxt-link>
 
       <div class="header-actions">
