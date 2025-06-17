@@ -163,6 +163,26 @@ export const useFaceStore = defineStore("face", () => {
         return photo;
     }
 
+    async function getImageFromCamera(): Promise<string> {
+        let photo = '';
+        try {
+            const response = await axios.get('proxy/face/getImageFromCamera');
+            photo = response.data.photoBase64;
+            await alertStore.addAlert({
+                message: "Снимок создан",
+                type: "success"
+            });
+        } catch (error) {
+            await alertStore.addAlert({
+                message: "Ошибка создания снимка",
+                status: "Код ошибки: " + error.response?.status,
+                type: "error"
+            });
+            console.error('Error fetching photo:', error);
+        }
+        return photo;
+    }
+
     async function loadItems() {
         await getFaces(searchParams.value);
     }
@@ -180,6 +200,7 @@ export const useFaceStore = defineStore("face", () => {
         searchParams,
         loadItems,
         updateSearchParams,
-        facesCount
+        facesCount,
+        getImageFromCamera
     };
 });

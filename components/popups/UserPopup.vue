@@ -6,7 +6,7 @@
 
     <template #content>
       <div class="avatar-section">
-        <div class="avatar-container" @click="triggerFileInput">
+        <div class="avatar-container" @click="getPhotoFromCamera">
           <img
               :src="photoBase64 ? `data:image/jpeg;base64,${photoBase64}` : 'images/empty.jpg'"
               alt="Фото"
@@ -14,9 +14,8 @@
           />
           <div class="avatar-overlay">
             <svg class="camera-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" fill-rule="evenodd"
-                    d="M7.72 2.79L5.5 5.75a1.25 1.25 0 0 1-1 .5H4A2.75 2.75 0 0 0 1.25 9v10A2.75 2.75 0 0 0 4 21.75h16A2.75 2.75 0 0 0 22.75 19V9A2.75 2.75 0 0 0 20 6.25h-.5a1.25 1.25 0 0 1-1-.5l-2.22-2.96a1.35 1.35 0 0 0-1.08-.54H8.8c-.425 0-.825.2-1.08.54M12 8.25a4.75 4.75 0 1 0 0 9.5a4.75 4.75 0 0 0 0-9.5"
-                    clip-rule="evenodd"/>
+              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16.75 12h3.632a1 1 0 0 1 .894 1.447l-2.034 4.069a1 1 0 0 1-1.708.134l-2.124-2.97m1.696-5.627a1 1 0 0 1 .447 1.341l-3.106 6.211a1 1 0 0 1-1.342.447L3.61 12.3a2.92 2.92 0 0 1-1.3-3.91L3.69 5.6a2.92 2.92 0 0 1 3.92-1.3zM2 19h3.76a2 2 0 0 0 1.8-1.1L9 15m-7 6v-4m5-8h.01"/>
             </svg>
           </div>
         </div>
@@ -139,6 +138,10 @@ function triggerFileInput() {
     fileInput.value.click();
   }
 }
+
+async function getPhotoFromCamera() {
+  photoBase64.value = await faceStore.getImageFromCamera();
+}
 </script>
 
 <style scoped>
@@ -146,6 +149,7 @@ function triggerFileInput() {
   display: flex;
   justify-content: center;
   margin-bottom: var(--spacing-2xl);
+  user-select: none;
 }
 
 .avatar-container {
@@ -189,8 +193,8 @@ function triggerFileInput() {
 }
 
 .camera-icon {
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   color: var(--color-text-primary);
 }
 
