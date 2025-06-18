@@ -154,8 +154,8 @@ async function getPhotoFromCamera() {
 
 .avatar-container {
   position: relative;
-  width: 200px;
-  height: 200px;
+  max-height: 400px;
+  width: 300px;
   cursor: pointer;
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -217,6 +217,9 @@ async function getPhotoFromCamera() {
   padding: var(--spacing-md);
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .file-input-display:hover {
