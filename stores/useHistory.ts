@@ -129,6 +129,7 @@ export const useHistoryStore = defineStore("history", () => {
         loading,
         searchParams,
         updateSearchParams,
-        loadItems
+        loadItems,
+        resetSearch
     }
 })
