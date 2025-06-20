@@ -57,6 +57,7 @@ async function deleteFace(id: string) {
 }
 
 onMounted(async () => {
+  await faceStore.resetSearch();
   await faceStore.loadItems();
 })
 </script>

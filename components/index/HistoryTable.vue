@@ -53,6 +53,7 @@ async function deleteHistory(id: string) {
 }
 
 onMounted(async () => {
+  await historyStore.resetSearch();
   await historyStore.loadItems();
 });
 </script>

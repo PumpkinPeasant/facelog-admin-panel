@@ -191,6 +191,16 @@ export const useFaceStore = defineStore("face", () => {
         searchParams.value = {...searchParams.value, ...params};
     }
 
+    function resetSearch() {
+        searchParams.value = {
+            name: undefined,
+            dateFrom: undefined,
+            dateTo: undefined,
+            page: 1,
+            pageSize: searchParams.value.pageSize
+        };
+    }
+
     return {
         faces,
         createFace,
@@ -201,6 +211,7 @@ export const useFaceStore = defineStore("face", () => {
         loadItems,
         updateSearchParams,
         facesCount,
-        getImageFromCamera
+        getImageFromCamera,
+        resetSearch
     };
 });
